@@ -1,0 +1,14 @@
+<html>
+  <body>
+    <script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
+    <script type="text/javascript">
+      var webAuth = new auth0.WebAuth({
+        domain: 'lighthouse-test.us.auth0.com',
+        clientID: 'm08vyVj02RJR0oI3UjlwfuCm8euBy4WR',
+        audience: 'https://lighthouse-test.us.auth0.com/api/v2/',
+      });
+      webAuth.popup.callback();
+      fetch('/api/me')
+    </script>
+  </body>
+</html>
