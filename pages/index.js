@@ -2,13 +2,16 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { WebAuth, Auth0Result } from 'auth0-js'
 import { useEffect, useState } from 'react'
-import axios from 'axios';
 
 const auth0 = new WebAuth({
   domain: process.env.NEXT_PUBLIC_AUTH0_DOMAIN,
   clientID: process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
   audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-  scope: 'openid profile'
+  scope: 'openid profile',
+  overrides: {
+    __tenant: 'lighthouse-app',
+    __token_issuer: 'auth.lighthouse.app', 
+  }
 })
 
 export default function Home() {
@@ -20,12 +23,16 @@ export default function Home() {
       responseType: 'token id_token',
       redirectUri: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
       audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
+      overrides: {
+        __tenant: 'lighthouse-app',
+        __token_issuer: 'auth.lighthouse.app', 
+      },
     }, (err, authResult) => {
       if (err) return setError(err);
       auth0.client.userInfo(authResult.accessToken, (err, user) => {
         if (err) {
           setError()
-          return console.log(err);
+          return console.log(err)
         }
         setUser(authResult.idTokenPayload.given_name)
         setError()
@@ -55,7 +62,15 @@ export default function Home() {
               redirectUri: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
               audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
               responseType: 'token id_token',
-              connection: 'Username-Password-Authentication' },
+              connection: 'Username-Password-Authentication',
+              tenant: 'lighthouse-app',
+              __token_issuer: 'auth.lighthouse.app',
+              overrides: {
+                __tenant: 'lighthouse-app',
+                __token_issuer: 'auth.lighthouse.app', 
+              },
+              sso: false,
+            },
               (err, authResult) => {
                 if (err) return console.log(err);
                 setUser(authResult.idTokenPayload.given_name)
@@ -66,19 +81,22 @@ export default function Home() {
             </a>
           }
 
-          <a onClick={() => auth0.logout({ returnTo: 'http://localhost:3000/' })}className={styles.card}>
+          <a onClick={() => auth0.logout({ returnTo: 'https://lighthouse.app:3000/' })}className={styles.card}>
             <h3>Logout &rarr;</h3>
             <p>Logout with auth0.</p>
           </a>
 
           {!user &&
             <a onClick={() => auth0.popup.authorize({
-              redirectUri: 'http://localhost:3000/callback.html',
-              audience: process.env.AUTH0_AUDIENCE,
+              redirectUri: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
+              audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
               responseType: 'token id_token',
-              connection: 'google-oauth2'
-              }, (err, authResult) => {
+              connection: 'google-oauth2',
+              tenant: 'lighthouse-app',
+              __token_issuer: 'auth.lighthouse.app',
+            }, (err, authResult) => {
                 if (err) console.log(err);
+                console.log(authResult)
                 setUser(authResult.idTokenPayload.given_name)
               })} className={styles.card}>
               <h3>Login w/ Google&rarr;</h3>
@@ -88,8 +106,8 @@ export default function Home() {
           
           {!user &&
             <a onClick={() => auth0.popup.authorize({
-              redirectUri: 'http://localhost:3000/callback.html',
-              audience: process.env.AUTH0_AUDIENCE,
+              redirectUri: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
+              audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
               responseType: 'token id_token', connection: 'facebook'
             }, (err, authResult) => {
               if (err) console.log(err);

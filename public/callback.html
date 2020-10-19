@@ -3,9 +3,13 @@
     <script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
     <script type="text/javascript">
       var webAuth = new auth0.WebAuth({
-        domain: 'lighthouse-test.us.auth0.com',
-        clientID: 'm08vyVj02RJR0oI3UjlwfuCm8euBy4WR',
-        audience: 'https://lighthouse-test.us.auth0.com/api/v2/',
+        domain: 'auth.lighthouse.app',
+        clientID: 'Zw1ybvt6yG27z6yOfiyLbDNqc6WscyD7',
+        audience: 'https://lighthouse-app.us.auth0.com/api/v2/',
+        overrides: {
+          __tenant: 'lighthouse-app',
+          __token_issuer: 'auth.lighthouse.app', 
+        }
       });
       webAuth.popup.callback();
       fetch('/api/me')
