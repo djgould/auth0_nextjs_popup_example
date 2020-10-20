@@ -9,8 +9,8 @@ const auth0 = new WebAuth({
   audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
   scope: 'openid profile',
   overrides: {
-    __tenant: 'lighthouse-app',
-    __token_issuer: 'auth.lighthouse.app', 
+    __tenant: process.env.NEXT_PUBLIC_TENANT,
+    __token_issuer: `https://${process.env.NEXT_PUBLIC_AUTH0_DOMAIN}/`, 
   }
 })
 
@@ -23,10 +23,6 @@ export default function Home() {
       responseType: 'token id_token',
       redirectUri: process.env.NEXT_PUBLIC_AUTH0_REDIRECT_URI,
       audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
-      overrides: {
-        __tenant: 'lighthouse-app',
-        __token_issuer: 'auth.lighthouse.app', 
-      },
     }, (err, authResult) => {
       if (err) return setError(err);
       auth0.client.userInfo(authResult.accessToken, (err, user) => {
@@ -63,12 +59,6 @@ export default function Home() {
               audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
               responseType: 'token id_token',
               connection: 'Username-Password-Authentication',
-              tenant: 'lighthouse-app',
-              __token_issuer: 'auth.lighthouse.app',
-              overrides: {
-                __tenant: 'lighthouse-app',
-                __token_issuer: 'auth.lighthouse.app', 
-              },
               sso: false,
             },
               (err, authResult) => {
@@ -81,7 +71,7 @@ export default function Home() {
             </a>
           }
 
-          <a onClick={() => auth0.logout({ returnTo: 'https://lighthouse.app:3000/' })}className={styles.card}>
+          <a onClick={() => auth0.logout({ returnTo: process.env.NEXT_PUBLIC_LOGOUT_REDIRECT_URI })}className={styles.card}>
             <h3>Logout &rarr;</h3>
             <p>Logout with auth0.</p>
           </a>
@@ -92,8 +82,6 @@ export default function Home() {
               audience: process.env.NEXT_PUBLIC_AUTH0_AUDIENCE,
               responseType: 'token id_token',
               connection: 'google-oauth2',
-              tenant: 'lighthouse-app',
-              __token_issuer: 'auth.lighthouse.app',
             }, (err, authResult) => {
                 if (err) console.log(err);
                 console.log(authResult)
